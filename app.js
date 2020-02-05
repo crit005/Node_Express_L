@@ -1,14 +1,19 @@
 const express = require('express');
+const path = require('path');
 
-//* Asigne param express
+//* Init App
 const app = express();
 
-//* Express rout
+//* Load View Engine
+app.set('views',path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+//* Home rout
 app.get('/',(req, res)=>{
-    res.send('Hello world');
+    res.render('index');
 });
 
-//* Create server son specific port 3000
+//* Start Server
 app.listen(3000,()=>{
     console.log("Server started on port 3000");
 })
