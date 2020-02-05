@@ -44,6 +44,24 @@ html(lang="en")
             p Copyright &copy; 2020
 ```
 
+### Using Template layout
+
+To use your template layou you can use extend layout_name in your pug file
+
+``` pug
+extends layout
+
+block content
+    h1 #{title}
+    ul
+        // loop into param
+        each article, i in articles 
+            li= article.title
+            li= article.author
+            li= article.body
+            hr
+```
+
 ## Parssing Paramete to Render View
 
 ``` 
