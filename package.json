@@ -4,8 +4,7 @@
   "description": "\"\"\u001b[Learn about nodejs and express framwork from scratch",
   "main": "app.js",
   "scripts": {
-    "start": "node app",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app"
   },
   "repository": {
     "type": "git",
@@ -24,6 +23,7 @@
   "homepage": "https://github.com/crit005/Node_Express_L#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^5.8.11",
     "pug": "^2.0.4"
   }
 }
