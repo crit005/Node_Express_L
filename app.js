@@ -41,6 +41,12 @@ app.get('/', (req, res) => {
     })
 });
 
+app.get('/articles/add',(req,res)=>{
+    res.render('add_article',{
+        title:'Add Article'
+    });
+});
+
 //* Start Server
 app.listen(3000, () => {
     console.log("Server started on port 3000");
