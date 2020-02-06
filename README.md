@@ -26,9 +26,10 @@ Create Model file (ex: models/articles.js)
 
 ``` js
 let mongoose = require('mongoose');
-
+//* Create Schema
+let Schema = mongoose.Schema;
 //* Article Schema
-let articleSchema = mongoose.Schema({
+let articleSchema = new Schema({
     title: {
         type: String,
         required: true
@@ -42,6 +43,9 @@ let articleSchema = mongoose.Schema({
         required: true
     }
 });
+
+//*Expot model
+let Article = module.exports = mongoose.model('Article', articleSchema);
 
 //*Expot as model
 let Article = module.exports = mongoose.model('Article', articleSchema);
