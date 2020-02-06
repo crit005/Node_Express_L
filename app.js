@@ -28,6 +28,7 @@ app.set('view engine', 'pug');
 
 //* Home rout
 app.get('/', (req, res) => {
+    //* Get all data from Articl
     Article.find({}, (err, articles) => {
         if (err) {
             console.log(err);
