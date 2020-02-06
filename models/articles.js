@@ -1,16 +1,17 @@
 let mongoose = require('mongoose');
-
+//* Create Schema
+let Schema = mongoose.Schema;
 //* Article Schema
-let articleSchema = mongoose.Schema({
-    title:{
+let articleSchema = new Schema({
+    title: {
         type: String,
         required: true
     },
-    author:{
+    author: {
         type: String,
         required: true
     },
-    body:{
+    body: {
         type: String,
         required: true
     }
