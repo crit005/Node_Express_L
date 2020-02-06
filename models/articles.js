@@ -16,4 +16,5 @@ let articleSchema = mongoose.Schema({
     }
 });
 
+//*Expot model
 let Article = module.exports = mongoose.model('Article', articleSchema);
