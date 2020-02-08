@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 //* parse applicaton/json
 app.use(bodyParser.json());
 
-//* Home rout
+//* Home routl
 app.get('/', (req, res) => {
     //* Get all data from Articl
     Article.find({}, (err, articles) => {
