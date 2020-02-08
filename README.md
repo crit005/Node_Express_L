@@ -1,79 +1,36 @@
-# Mongoose and Model Setup
+# Bower
 
-## Mongo Command
+Bower is a package manager for the web
 
-``` 
-show dbs // Show all databases
-use db_name // create database and switch to database
-db.createCollection('Collection_name') // Create Collection
-db.collection_name.insert({title:'your title', author: 'author name', body:'your body'}) // Insert to Collection
-db.collection_name.find().pretty() // Read and search in collection
-```
-
-## Mongoosejs
-
-Install repository
+## Install Bower
 
 ``` 
-$ npm install mongoose
+    npm install -g bower
+ ```
+
+## Config folder
+
+Create file name .bowerrc
+
+``` json
+{
+    "directory": "public/bower_components"
+}
 ```
 
-## Usage 
+## Install web pacage
 
-### Create model
-
-Create Model file (ex: models/articles.js)
-
-``` js
-let mongoose = require('mongoose');
-//* Create Schema
-let Schema = mongoose.Schema;
-//* Article Schema
-let articleSchema = new Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: String,
-        required: true
-    },
-    body: {
-        type: String,
-        required: true
-    }
-});
-
-//*Expot model
-let Article = module.exports = mongoose.model('Article', articleSchema);
-
-//*Expot as model
-let Article = module.exports = mongoose.model('Article', articleSchema);
+``` 
+bower install bootstrap
+bower install jquery
 ```
 
-### Using model
+# Add bootstrap and jquery to your pug page
 
-``` js
-//* Bring in Models
-let Article = require('./models/articles');
+``` pug
+link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css")
 
-//* Load View Engine
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
-
-//* Home rout
-app.get('/', (req, res) => {
-    //* Get all data from Articl
-    Article.find({}, (err, articles) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render('index', {
-                title: 'Nodejs Express/Home',
-                articles: articles
-            });
-        }
-    })
-});
+script(src='/bower_components/jquery/dist/jquery.min.js')
+script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
 ```
 

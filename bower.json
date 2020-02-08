@@ -1,0 +1,28 @@
+{
+  "name": "nodejs_express",
+  "description": "\"\"\u001b[Learn about nodejs and express framwork from scratch",
+  "main": "app.js",
+  "authors": [
+    "Konthea"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "learn",
+    "nodejs",
+    "express"
+  ],
+  "homepage": "https://github.com/crit005/Node_Express_L",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "bootstrap": "^4.4.1"
+  }
+}

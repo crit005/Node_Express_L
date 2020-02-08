@@ -29,9 +29,12 @@ app.set('view engine', 'pug');
 
 //* Body Parser Middleware
 //* parser application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 //* parse applicaton/json
 app.use(bodyParser.json());
+
+//* Set Static folder public
+app.use(express.static(path.join(__dirname, 'public')));
 
 //* Home routl
 app.get('/', (req, res) => {
@@ -48,22 +51,28 @@ app.get('/', (req, res) => {
     })
 });
 
-app.get('/articles/add',(req,res)=>{
-    res.render('add_article',{
-        title:'Add Article'
+app.get('/article/:id', (req, res) => {
+    Article.findById(req.params.id, (err, article) => {
+        res.render('article', { article: article });
     });
 });
 
-app.post('/articles/add',(req,res)=>{
+app.get('/articles/add', (req, res) => {
+    res.render('add_article', {
+        title: 'Add Article'
+    });
+});
+
+app.post('/articles/add', (req, res) => {
     let article = new Article();
     article.title = req.body.title;
     article.author = req.body.author;
     article.body = req.body.body;
-    article.save((err)=>{
-        if(err){
+    article.save((err) => {
+        if (err) {
             console.log(err);
             return;
-        }else{
+        } else {
             res.redirect('/');
         }
     })
