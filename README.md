@@ -25,6 +25,14 @@ bower install bootstrap
 bower install jquery
 ```
 
+## Init you bower package 
+
+You may not want to commit all your bower pacackges to server, so you can create bower.json to stor pacage name by run command below:
+
+``` 
+bower init
+```
+
 # Add bootstrap and jquery to your pug page
 
 ``` pug
