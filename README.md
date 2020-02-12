@@ -1,5 +1,4 @@
 npm install express-messages express-session connect-flash express-validator --save
-npm install express-validator
 
 > https://github.com/visionmedia/express-messages
 > https://www.npmjs.com/package/connect-flash
@@ -133,7 +132,7 @@ router.get('/:id', (req, res) => {
 module.exports = router;
 ```
 
-## Using articles rout in app.js
+## Using articles route in app.js
 
 To use individuale route file in app.js we can bring it in side as below:
 
