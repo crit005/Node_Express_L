@@ -243,3 +243,58 @@ router.post('/add', [
 });
 ```
 
+## Validator
+
+For express-validator module is a bit diference, it use for each rout which need validation only and the way to import it also deference from other module.
+
+Let see it in articles.js route
+
+``` js
+// require module express validator
+const {
+    check,
+    validationResult
+} = require('express-validator');
+
+//* add article to db
+router.post('/add',
+    // Set roules and message
+    [
+        check('title', 'Title is required').notEmpty(),
+        check('author', 'Author is required').notEmpty(),
+        check('body', 'Body is required').notEmpty(),
+    ],
+    (req, res) => {
+        // Catch validation error and pars the error to page
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.render('add_article', {
+                title: 'Add Article',
+                errors: errors.array()
+            });
+        } else {
+            let article = new Article();
+            article.title = req.body.title;
+            article.author = req.body.author;
+            article.body = req.body.body;
+            article.save((err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                } else {
+                    req.flash('success', 'Article Added');
+                    res.redirect('/');
+                }
+            })
+        }
+    });
+```
+
+## Show validator error message in layout.pug
+
+``` pug
+if errors
+    each error in errors
+        div(class="alert alert-danger") #{error.msg}_#{error.param}
+```
+
