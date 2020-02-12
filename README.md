@@ -1,56 +1,89 @@
-# Upate Article
+npm install express-messages express-session connect-flash express-validator --save
+npm install express-validator
 
-## Add a link to for access Edit page in article.pug
+> https://github.com/visionmedia/express-messages
+> https://www.npmjs.com/package/connect-flash
 
-``` pug
-extends layout
+# Separate Routing
 
-block content
-    h1= article.title
-    h5 Written by #{article.author}
-    p= article.body
-    hr
-    a.btn.btn-default(href="/article/edit/"+article._id) Edit
-```
+Instead of  put all the routes in a single app.js, we can make it separate to individual route for easy manage your code later.
 
-## Create Edit page in Views directory name edit_article.pug
+Create a directory name routes in your project directory and add your route file in it ex: articles.js.
 
-``` pug
-extends layout
-
-block content
-    h1 #{title}
-    form(method='POST' action='/articles/edit/' + article._id)
-        #form-group
-            label Title:
-            input.form-control(type="text" name='title', value= article.title)
-        #form-group
-            label Author:
-            input.form-control(type="text" name='author',value= article.author)
-        #form-group
-            label Body:
-            textarea.form-control(name='body')=article.body
-        input.btn.btn-primary(type='submit' value='Submit')
-```
-
-## Create rout for load edit form in app.js
+To use this file as route file we need Router() method form express module
 
 ``` js
+const express = requite('express');
+const router = express.Router();
+```
+
+And to allow app.js use use this file as route we need to export this rout module at the end of file.
+
+``` js
+module.exports = router;
+```
+
+This is same ple all content of articles.js
+
+``` js
+const express = require('express');
+const router = express.Router();
+const {
+    check,
+    validationResult
+} = require('express-validator');
+
+//* Bring in Models
+let Article = require('../models/articles');
+
 // * load edit form
-app.get('/article/edit/:id', (req, res) => {
+router.get('/edit/:id', (req, res) => {
     Article.findById(req.params.id, (err, article) => {
         res.render('edit_article', {
             article: article
         });
     });
 });
-```
 
-## create rout for update and return to home in app.js
+router.get('/add', (req, res) => {
+    res.render('add_article', {
+        title: 'Add Article'
+    });
+});
 
-``` js
+//* add article to db
+router.post('/add', [
+    check('title', 'Title is required').notEmpty(),
+    check('author', 'Author is required').notEmpty(),
+    check('body', 'Body is required').notEmpty(),
+], (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.render('add_article', {
+            title: 'Add Article',
+            errors: errors.array()
+        });
+    } else {
+        let article = new Article();
+        article.title = req.body.title;
+        article.author = req.body.author;
+        article.body = req.body.body;
+        article.save((err) => {
+            if (err) {
+                console.log(err);
+                return;
+            } else {
+                req.flash('success', 'Article Added');
+                res.redirect('/');
+            }
+        })
+    }
+
+});
+
 //* edit article to db
-app.post('/articles/edit/:id', (req, res) => {
+router.post('/edit/:id', (req, res) => {
     let article = {};
     article.title = req.body.title;
     article.author = req.body.author;
@@ -65,94 +98,14 @@ app.post('/articles/edit/:id', (req, res) => {
             console.log(err);
             return;
         } else {
+            req.flash('success', 'Article Updated');
             res.redirect('/');
         }
     })
 });
-```
 
-# Delete Article
-
-## Add a link to for access Edit page in article.pug
-
-``` pug
-extends layout
-
-block content
-    h1= article.title
-    h5 Written by #{article.author}
-    p= article.body
-    hr
-    a.btn.btn-default(href="/article/edit/"+article._id) Edit
-    a.btn.btn-danger.delete-article(href="#", data-id=article._id) Delete
-```
-
-## Create main.js in public/js to handle delete even with Ajax of Delete type
-
-``` js
-$(document).ready(() => {
-    $('.delete-article').on('click', (e) => {
-        $taget = $(e.target);
-        const id = $taget.attr('data-id');
-        $.ajax({
-            type: 'DELETE',
-            url: `/article/${id}` ,
-            success: (res) => {
-                alert( `Delete Article` );
-                window.location.href = `/` ;
-            },
-            error: (err) => {
-                console.log(err);
-            }
-        })
-    })
-});
-```
-
-## Include main.js to layout.pug
-
-``` pug
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        meta(http-equiv="X-UA-Compatible" content="ie=edge")
-        title #{title}
-        link(rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css")
-        link(rel="stylesheet" href="/css/style.css")
-    body
-
-        nav.navbar.navbar-expand-md.navbar-dark.bg-dark
-            .container
-                a.navbar-brand(href='#') Project name
-                button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarsExampleDefault' aria-controls='navbarsExampleDefault' aria-expanded='false' aria-label='Toggle navigation')
-                    span.navbar-toggler-icon
-                #navbarsExampleDefault.collapse.navbar-collapse
-                    ul.navbar-nav.mr-auto
-                        li.nav-item.active
-                            a.nav-link(href='/') Home                            
-                        li.nav-item
-                            a.nav-link(href='/articles/add') Add Article                    
-                    form.form-inline.my-2.my-lg-0
-                        input.form-control.mr-sm-2(type='text' placeholder='Search' aria-label='Search')
-                        button.btn.btn-secondary.my-2.my-sm-0(type='submit') Search
-
-        .container
-            block content
-            br
-            hr
-            fotter
-                p Copyright &copy; 2020
-    script(src='/bower_components/jquery/dist/jquery.min.js')
-    script(src='/bower_components/bootstrap/dist/js/bootstrap.min.js')
-    script(src='/js/main.js')
-```
-
-## Create rout for Delete method in app.js
-
-``` js
 //* delete article by id
-app.delete('/article/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     let query = {
         _id: req.params.id
     }
@@ -165,6 +118,129 @@ app.delete('/article/:id', (req, res) => {
             res.send('Success');
         }
     })
+});
+
+//* load article by id
+router.get('/:id', (req, res) => {
+    Article.findById(req.params.id, (err, article) => {
+        res.render('article', {
+            article: article
+        });
+    });
+});
+
+//* Export module
+module.exports = router;
+```
+
+## Using articles rout in app.js
+
+To use individuale route file in app.js we can bring it in side as below:
+
+``` js
+//* Get access to Route Files
+let articles = require('./routes/articles');
+app.use('/articles', articles);
+```
+
+# Messaging and Validator
+
+Using Messageing and Validator for express we required a few module from npm repository
+
+* express-session
+* connect-flash
+* express-messages
+* express-validator
+
+Let install all of them
+
+``` 
+npm install --save express-session connect-flash express-messages express-validator
+```
+
+## Set Require module and Middleware
+
+Bring in express-session module justo install about and setup Middleware for messaging in to app.js
+
+``` js
+//* Require module
+const session = require('express-session');
+
+//* Express Session Middleware
+app.use(session({
+    secret: 'whataveryouputforsecureyoursession',
+    resave: true,
+    saveUninitialized: true,
+}));
+
+//* Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function(req, res, next) {
+    // Assign all message from connect flash to res.locals.message
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+```
+
+## Make a message template
+
+Create Message template in views directory name message.pug and put sample as below:
+
+``` pug
+.messages
+    each type in Object.keys(messages)
+        each message in messages[type]
+            // Create div message depend on type of message
+            div(class='alert alert-'+type) #{message}
+```
+
+## Embed message template in layout template file
+
+Edeit your layout.pug and put the code below:
+
+``` pug
+// embed message template if the messages are avaliable
+!= messages('message', locals)
+```
+
+## Set a message
+
+Syntax: req.flash('type', 'message'); 
+
+* type: It is a pees of your class style fory your message if with bootstrap it can be ('success', 'info' or 'danger' ... ).
+* message: It is a informaton that you want to publish.
+
+Let see how we set a meesgae after article was added:
+
+``` js
+//* add article to db
+router.post('/add', [
+    check('title', 'Title is required').notEmpty(),
+    check('author', 'Author is required').notEmpty(),
+    check('body', 'Body is required').notEmpty(),
+], (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.render('add_article', {
+            title: 'Add Article',
+            errors: errors.array()
+        });
+    } else {
+        let article = new Article();
+        article.title = req.body.title;
+        article.author = req.body.author;
+        article.body = req.body.body;
+        article.save((err) => {
+            if (err) {
+                console.log(err);
+                return;
+            } else {
+                req.flash('success', 'Article Added');
+                res.redirect('/');
+            }
+        })
+    }
 });
 ```
 

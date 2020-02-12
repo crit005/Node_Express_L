@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const mongose = require('mongoose');
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const session = require('express-session');
 
 mongose.connect('mongodb://localhost/nodekb');
 
@@ -36,6 +38,22 @@ app.use(bodyParser.json());
 //* Set Static folder public
 app.use(express.static(path.join(__dirname, 'public')));
 
+//* Express Session Middleware
+app.use(session({
+    secret: 'whataveryouputforsecureyoursession',
+    resave: true,
+    saveUninitialized: true,
+}));
+
+//* Express Messages Middleware
+app.use(flash());
+app.use(function (req, res, next) {
+    // Assign all message from connect flash to res.locals.message
+    res.locals.messages = require('express-messages')(req, res);
+    next();
+});
+
+
 //* Home routl
 app.get('/', (req, res) => {
     //* Get all data from Articl
@@ -51,74 +69,9 @@ app.get('/', (req, res) => {
     })
 });
 
-//* load article by id
-app.get('/article/:id', (req, res) => {
-    Article.findById(req.params.id, (err, article) => {
-        res.render('article', { article: article });
-    });
-});
-
-// * load edit form
-app.get('/article/edit/:id', (req, res) => {
-    Article.findById(req.params.id, (err, article) => {
-        res.render('edit_article', { article: article });
-    });
-});
-
-app.get('/articles/add', (req, res) => {
-    res.render('add_article', {
-        title: 'Add Article'
-    });
-});
-
-//* add article to db
-app.post('/articles/add', (req, res) => {
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-    article.save((err) => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            res.redirect('/');
-        }
-    })
-});
-
-//* edit article to db
-app.post('/articles/edit/:id', (req, res) => {
-    let article = {};
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-
-    let query = {_id:req.params.id}
-    
-    Article.update(query, article, (err) => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            res.redirect('/');
-        }
-    })
-});
-
-//* delete article by id
-app.delete('/article/:id', (req, res) => {
-    let query = {_id:req.params.id}
-    
-    Article.remove(query, (err) => {
-        if (err) {
-            console.log(err);
-            return;
-        } else {
-            res.send('Success');
-        }
-    })
-});
+//* Get access to Route Files
+let articles = require('./routes/articles');
+app.use('/articles', articles);
 
 //* Start Server
 app.listen(3000, () => {
