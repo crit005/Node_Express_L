@@ -4,8 +4,9 @@ const mongose = require('mongoose');
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
+const config = require('./config/database');
 
-mongose.connect('mongodb://localhost/nodekb');
+mongose.connect(config.database);
 
 let db = mongose.connection;
 
@@ -71,7 +72,11 @@ app.get('/', (req, res) => {
 
 //* Get access to Route Files
 let articles = require('./routes/articles');
+let users = require('./routes/users');
+
 app.use('/articles', articles);
+app.use('/users', users);
+
 
 //* Start Server
 app.listen(3000, () => {
