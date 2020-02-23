@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const flash = require('connect-flash');
 const session = require('express-session');
 const config = require('./config/database');
+const passport = require('passport');
 
 mongose.connect(config.database);
 
@@ -54,6 +55,16 @@ app.use(function (req, res, next) {
     next();
 });
 
+//* Passport Config
+require('./config/passport')(passport);
+// Passport Midleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', (req,res,next)=>{
+    res.locals.user = req.user || null;
+    next();
+})
 
 //* Home routl
 app.get('/', (req, res) => {
