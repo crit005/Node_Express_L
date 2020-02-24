@@ -60,7 +60,6 @@ Now tell the app to use passport
 ``` js
 const passport = require('')
 
- 
 //* Passport Config
 require('./config/passport')(passport);
 // Passport Midleware
@@ -68,7 +67,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Set public variable for themplat engin access user form any where
-app.get('*', (req,res,next)=>{
+app.get('*', (req, res, next) => {
     res.locals.user = req.user || null;
     next();
 })
@@ -100,5 +99,49 @@ router.get('/logout', (req, res) => {
 });
 ```
 
+# Access controller
+
+To protect you route form user accerss without login and redirect them to somewhere you want, we can function to ensur authenticat  for each rout as below:
+
+``` js
+// Access Control
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        req.flash('danger', 'Please login');
+        res.redirect('/users/login');
+    }
+}
+```
+
+Embet this functon to all route which you want to protect
+
+``` js
+//* delete article by id
+router.delete('/:id', ensureAuthenticated, (req, res) => {
+
+    if (!req.user._id) {
+        res.status(500).send();
+    }
+
+    let query = { _id: req.params.id }
+
+    Article.findById(req.params.id, (err, article) => {
+        if (article.author != req.user._id) {
+            res.status(500).send();
+        } else {
+            Article.remove(query, (err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                } else {
+                    res.send('Success');
+                }
+            });
+        }
+    })
 
 
+});
+```
