@@ -67,7 +67,7 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Declare public variable to stor user after passport serialize
+// Set public variable for themplat engin access user form any where
 app.get('*', (req,res,next)=>{
     res.locals.user = req.user || null;
     next();
